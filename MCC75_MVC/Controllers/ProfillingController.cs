@@ -1,6 +1,8 @@
 ﻿using MCC75_MVC.Contexts;
 using MCC75_MVC.Models;
+using MCC75_MVC.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace MCC75_MVC.Controllers;
@@ -15,8 +17,17 @@ public class ProfillingController : Controller
 
     public IActionResult Index()
     {
-        var profillings = context.Profillings.ToList();
-        return View(profillings);
+        /*var result = context.Profillings.Join(
+            context.Employees,
+            p => p.EmployeeNIK,
+            e => e.NIK,
+            (p, e) => new Profilling
+            {
+                EmployeeNIK = e.FirstName + " " + e.LastName,
+                EducationId = p.EducationId
+            });
+        return View(result);*/
+        return View();
     }
     public IActionResult Details(int id)
     {
@@ -26,6 +37,20 @@ public class ProfillingController : Controller
 
     public IActionResult Create()
     {
+        /*var employees = context.Employees.ToList()
+            .Select(e => new SelectListItem
+            {
+                Value = e.NIK.ToString(),
+                Text = e.FirstName + " " + e.LastName
+            });
+        ViewBag.Employee = employees;
+        var educations = context.Educations.ToList()
+            .Select(ed => new SelectListItem
+            {
+                Value = ed.Id.ToString(),
+                Text = ed.Major
+            });
+        ViewBag.Educations = educations;*/
         return View();
     }
 

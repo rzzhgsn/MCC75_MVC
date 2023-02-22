@@ -1,5 +1,6 @@
 ﻿using MCC75_MVC.Contexts;
 using MCC75_MVC.Models;
+using MCC75_MVC.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,20 +8,21 @@ namespace MCC75_MVC.Controllers;
 
 public class UniversityController : Controller
 {
-    private readonly MyContext context;
-    public UniversityController(MyContext context)
+    private readonly UniversityRepository repository;
+
+    public UniversityController(UniversityRepository repository)
     {
-        this.context = context;
+        this.repository = repository;
     }
 
     public IActionResult Index()
     {
-        var universities = context.Universities.ToList();
+        var universities = repository.GetAll();
         return View(universities);
     }
     public IActionResult Details(int id)
     {
-        var university = context.Universities.Find(id);
+        var university = repository.GetById(id);
         return View(university);
     }
 
@@ -33,8 +35,7 @@ public class UniversityController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Create(University university)
     {
-        context.Add(university);
-        var result = context.SaveChanges();
+        var result = repository.Insert(university);
         if (result > 0)
             return RedirectToAction(nameof(Index));
         return View();
@@ -42,7 +43,7 @@ public class UniversityController : Controller
 
     public IActionResult Edit(int id)
     {
-        var university = context.Universities.Find(id);
+        var university = repository.GetById(id);
         return View(university);
     }
 
@@ -50,8 +51,7 @@ public class UniversityController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Edit(University university)
     {
-        context.Entry(university).State = EntityState.Modified;
-        var result = context.SaveChanges();
+        var result = repository.Update(university);
         if (result > 0)
         {
             return RedirectToAction(nameof(Index));
@@ -61,7 +61,7 @@ public class UniversityController : Controller
 
     public IActionResult Delete(int id)
     {
-        var university = context.Universities.Find(id);
+        var university = repository.GetById(id);
         return View(university);
     }
 
@@ -69,12 +69,15 @@ public class UniversityController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Remove(int id)
     {
-        var university = context.Universities.Find(id);
-        context.Remove(university);
-        var result = context.SaveChanges();
-        if (result > 0)
+        var result = repository.Delete(id);
+        if (result == 0)
+        {
+            // Data Tidak Ditemukan
+        }
+        else
         {
             return RedirectToAction(nameof(Index));
+
         }
         return View();
     }

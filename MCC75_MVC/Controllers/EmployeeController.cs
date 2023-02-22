@@ -23,8 +23,8 @@ public class EmployeeController : Controller
                 NIK = e.NIK,
                 FirstName= e.FirstName,
                 LastName= e.LastName,
-                Bithdate= e.Bithdate,
-                Gender = (EmployeeVM.GenderEnum)e.Gender,
+                Birthdate = e.Birthdate,
+                Gender = (GenderEnum)e.Gender,
                 HiringDate = e.HiringDate,
                 Email = e.Email,
                 PhoneNumber= e.PhoneNumber,
@@ -40,8 +40,8 @@ public class EmployeeController : Controller
             NIK = employees.NIK,
             FirstName = employees.FirstName,
             LastName = employees.LastName,
-            Bithdate = employees.Bithdate,
-            Gender = (EmployeeVM.GenderEnum)employees.Gender,
+            Birthdate = employees.Birthdate,
+            Gender = (GenderEnum)employees.Gender,
             HiringDate = employees.HiringDate,
             Email = employees.Email,
             PhoneNumber = employees.PhoneNumber,
@@ -50,12 +50,12 @@ public class EmployeeController : Controller
 
     public IActionResult Create()
     {
-        var employess = context.Employees.ToList()
-            .Select(e => new SelectListItem
+        var employess = context.Employees.ToList();
+            /*.Select(e => new SelectListItem
             {
                 Value = e.Gender.ToString(),
-            });
-        ViewBag.Employees = employess;
+            });*/
+        ViewBag.Gender = employess;
         return View();
     }
 
@@ -68,7 +68,7 @@ public class EmployeeController : Controller
             NIK = employees.NIK,
             FirstName = employees.FirstName,
             LastName = employees.LastName,
-            Bithdate = employees.Bithdate,
+            Birthdate = employees.Birthdate,
             Gender = (Employee.GenderEnum)employees.Gender,
             HiringDate = employees.HiringDate,
             Email = employees.Email,
@@ -83,19 +83,19 @@ public class EmployeeController : Controller
     public IActionResult Edit(string id)
     {
         var employees = context.Employees.Find(id);
-       /* var employess = context.Employees.ToList()
+        var employess = context.Employees.ToList()
             .Select(e => new SelectListItem
             {
                 Value = e.Gender.ToString(),
             });
-        ViewBag.Employees = employess;*/
+        ViewBag.Gender = employess;
         return View(new EmployeeVM
         {
             NIK = employees.NIK,
             FirstName = employees.FirstName,
             LastName = employees.LastName,
-            Bithdate = employees.Bithdate,
-            Gender = (EmployeeVM.GenderEnum)employees.Gender,
+            Birthdate = employees.Birthdate,
+            Gender = (GenderEnum)employees.Gender,
             HiringDate = employees.HiringDate,
             Email = employees.Email,
             PhoneNumber = employees.PhoneNumber,
@@ -111,12 +111,13 @@ public class EmployeeController : Controller
             NIK = employees.NIK,
             FirstName = employees.FirstName,
             LastName = employees.LastName,
-            Bithdate = employees.Bithdate,
+            Birthdate = employees.Birthdate,
             Gender = (Employee.GenderEnum)employees.Gender,
             HiringDate = employees.HiringDate,
             Email = employees.Email,
             PhoneNumber = employees.PhoneNumber,
         }).State = EntityState.Modified;
+
         var result = context.SaveChanges();
 
         if (result > 0)

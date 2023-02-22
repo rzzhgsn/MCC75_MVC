@@ -10,8 +10,10 @@ public class Profilling
     [Key, Column("id")]
     public int Id { get; set; }
     [Required, Column("employee_nik", TypeName = "nchar(5)")]
+    [Display(Name = "Employee Name")]
     public string EmployeeNIK { get; set; }
     [Required, Column("employee_id")]
+    [Display(Name = "Education Name")]
     public int EducationId { get; set; }
 
     // Relation // Cardinality

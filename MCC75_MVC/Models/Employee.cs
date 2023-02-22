@@ -6,9 +6,7 @@ namespace MCC75_MVC.Models;
 [Table("tb_m_employess")]
 
 public class Employee
-{
-    internal static object employees;
-
+{ 
     [Key, Column("nik", TypeName = "nchar(5)")]
     public string NIK { get; set; }
     [Required, Column("first_name"), MaxLength(50)]
@@ -16,7 +14,7 @@ public class Employee
     [Column("last_name"), MaxLength(50)]
     public string? LastName { get; set; }
     [Required, Column("birthdate")]
-    public DateTime Bithdate { get; set; }
+    public DateTime Birthdate { get; set; }
     [Required, Column("gender")]
     public GenderEnum Gender { get; set; }
     [Required, Column("hiring_date")]
@@ -26,13 +24,14 @@ public class Employee
     [Column("phone_number"), MaxLength(20)]
     public string? PhoneNumber { get; set; }
 
+
+    // Cardinality
+    public ICollection<Profilling>? Profillings { get; set; }
+    public Account? Account { get; set; }
+
     public enum GenderEnum
     {
         Male,
         Female
     }
-
-    // Cardinality
-    public ICollection<Profilling>? Profillings { get; set; }
-    public Account? Account { get; set; }   
 }

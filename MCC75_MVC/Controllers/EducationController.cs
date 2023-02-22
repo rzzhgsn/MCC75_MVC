@@ -1,5 +1,6 @@
 ﻿using MCC75_MVC.Contexts;
 using MCC75_MVC.Models;
+using MCC75_MVC.Repositories;
 using MCC75_MVC.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,43 +11,29 @@ namespace MCC75_MVC.Controllers;
 public class EducationController : Controller
 {
     private readonly MyContext context;
-    public EducationController(MyContext context)
+    private readonly EducationRepository educationrepository;
+    private readonly UniversityRepository universityRepository;
+
+    public EducationController(MyContext context, EducationRepository educationrepository, UniversityRepository universityRepository)
     {
         this.context = context;
+        this.educationrepository = educationrepository;
+        this.universityRepository = universityRepository;
     }
 
     public IActionResult Index()
     {
-        var result = context.Educations.Join(
-            context.Universities,
-            e => e.UniversityId,
-            u => u.Id,
-            (e, u) => new EducationVM
-            {
-                Id = e.Id,
-                Degree = e.Degree,
-                GPA = e.GPA,
-                Major = e.Major,
-                UniversityName = u.Name
-            });
-        return View(result);
+        var education = educationrepository.GetEducationUniversities();
+        return View(education);
     }
     public IActionResult Details(int id)
     {
-        var education = context.Educations.Find(id);
-        return View(new EducationVM
-        {
-            Id = education.Id,
-            Degree = education.Degree,
-            GPA = education.GPA,
-            Major = education.Major,
-            UniversityName = context.Universities.Find(education.UniversityId).Name
-        });
+        return View(educationrepository.GetEducationById(id));
     }
 
     public IActionResult Create()
     {
-        var universities = context.Universities.ToList()
+        var universities = universityRepository.GetAll()
             .Select(u => new SelectListItem
             {
                 Value = u.Id.ToString(),
@@ -58,9 +45,9 @@ public class EducationController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Create(EducationVM education)
+    public IActionResult Create(EducationUniversityVM education)
     {
-        context.Add(new Education
+        var result = educationrepository.Insert(new Education
         {
             Id = education.Id,
             Degree = education.Degree,
@@ -68,23 +55,24 @@ public class EducationController : Controller
             Major = education.Major,
             UniversityId = Convert.ToInt16(education.UniversityName)
         });
-        var result = context.SaveChanges();
         if (result > 0)
             return RedirectToAction(nameof(Index));
+
         return View();
     }
 
     public IActionResult Edit(int id)
     {
-        var education = context.Educations.Find(id);
-        var universities = context.Universities.ToList()
+        
+        var universities = universityRepository.GetAll()
             .Select(u => new SelectListItem
             {
                 Value = u.Id.ToString(),
                 Text = u.Name
             });
         ViewBag.University = universities;
-        return View(new EducationVM
+        var education = educationrepository.GetById(id);
+        return View(new EducationUniversityVM
         {
             Id = education.Id,
             Degree = education.Degree,
@@ -96,18 +84,17 @@ public class EducationController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Edit(EducationVM education)
+    public IActionResult Edit(EducationUniversityVM education)
     {
-        
-        context.Entry(new Education
+
+        var result = educationrepository.Update(new Education
         {
             Id = education.Id,
             Degree = education.Degree,
             GPA = education.GPA,
             Major = education.Major,
             UniversityId = Convert.ToInt16(education.UniversityName)
-        }).State = EntityState.Modified;
-        var result = context.SaveChanges();
+        });
         if (result > 0)
         {
             return RedirectToAction(nameof(Index));
@@ -117,7 +104,7 @@ public class EducationController : Controller
 
     public IActionResult Delete(int id)
     {
-        var education = context.Educations.Find(id);
+        var education = educationrepository.GetById(id);
         return View(education);
     }
 
@@ -125,12 +112,15 @@ public class EducationController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Remove(int id)
     {
-        var education = context.Educations.Find(id);
-        context.Remove(education);
-        var result = context.SaveChanges();
-        if (result > 0)
+        var result = educationrepository.Delete(id);
+        if (result == 0)
+        {
+            // Data Tidak Ditemukan
+        }
+        else
         {
             return RedirectToAction(nameof(Index));
+
         }
         return View();
     }

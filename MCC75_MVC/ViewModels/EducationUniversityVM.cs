@@ -2,7 +2,7 @@
 
 namespace MCC75_MVC.ViewModels;
 
-public class EducationVM
+public class EducationUniversityVM
 {
     public int Id { get; set; } 
     public string Major { get; set; }

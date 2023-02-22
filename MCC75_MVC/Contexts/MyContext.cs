@@ -32,10 +32,10 @@ public class MyContext : DbContext
         });*/
 
         // Relasi one Employee ke one Account sekaligus menjadi Primary Key
-        modelBuilder.Entity<Employee>()
+        /*modelBuilder.Entity<Employee>()
             .HasOne(e => e.Account)
             .WithOne(a => a.Employee)
-            .HasForeignKey<Account>(fk => fk.EmployeeNIK);
+            .HasForeignKey<Account>(fk => fk.EmployeeNIK);*/
     }
 
 }
