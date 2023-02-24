@@ -1,0 +1,26 @@
+﻿@{
+    Layout = null;
+}
+
+<body>
+    <div id="app">
+        <div class="txt" style="text-align: center;  color: #888;">
+            <h1 style="font-size: 150px; color: #888; margin-bottom: 0px;">401</h1>
+            <h3 style="font-size: 50px; ">Unauthorized</h3>
+            <h2>Access is allowed only for registered users.</h2>
+            <div class="txt2"> Redirect after 5 seconds...</div>
+        </div>    
+    </div>
+
+    <div id="counter" style="text-align: center; color: #888;">5</div>
+    <script>
+        setInterval(function () {
+            var div = document.querySelector("#counter");
+            var count = div.textContent * 1 - 1;
+            div.textContent = count;
+            if (count <= 0) {
+                window.location.replace("Home");
+            }
+        }, 1000);
+    </script>
+</body>

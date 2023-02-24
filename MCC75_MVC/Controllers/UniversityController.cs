@@ -17,17 +17,34 @@ public class UniversityController : Controller
 
     public IActionResult Index()
     {
+        if (HttpContext.Session.GetString("email") == null)
+        {
+            return RedirectToAction("Unauthorized", "Error");
+        }
         var universities = repository.GetAll();
         return View(universities);
+
     }
     public IActionResult Details(int id)
     {
+        if (HttpContext.Session.GetString("email") == null)
+        {
+            return RedirectToAction("Unauthorized", "Error");
+        }
         var university = repository.GetById(id);
         return View(university);
     }
 
     public IActionResult Create()
     {
+        if (HttpContext.Session.GetString("email") == null)
+        {
+            return RedirectToAction("Unauthorized", "Error");
+        }
+        if (HttpContext.Session.GetString("role") != "Admin")
+        {
+            return RedirectToAction("Forbidden", "Error");
+        }
         return View();
     }
 
@@ -35,6 +52,14 @@ public class UniversityController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Create(University university)
     {
+        if (HttpContext.Session.GetString("email") == null)
+        {
+            return RedirectToAction("Unauthorized", "Error");
+        }
+        if (HttpContext.Session.GetString("role") != "Admin")
+        {
+            return RedirectToAction("Forbidden", "Error");
+        }
         var result = repository.Insert(university);
         if (result > 0)
             return RedirectToAction(nameof(Index));
@@ -43,6 +68,14 @@ public class UniversityController : Controller
 
     public IActionResult Edit(int id)
     {
+        if (HttpContext.Session.GetString("email") == null)
+        {
+            return RedirectToAction("Unauthorized", "Error");
+        }
+        if (HttpContext.Session.GetString("role") != "Admin")
+        {
+            return RedirectToAction("Forbidden", "Error");
+        }
         var university = repository.GetById(id);
         return View(university);
     }
@@ -51,6 +84,14 @@ public class UniversityController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Edit(University university)
     {
+        if (HttpContext.Session.GetString("email") == null)
+        {
+            return RedirectToAction("Unauthorized", "Error");
+        }
+        if (HttpContext.Session.GetString("role") != "Admin")
+        {
+            return RedirectToAction("Forbidden", "Error");
+        }
         var result = repository.Update(university);
         if (result > 0)
         {
@@ -61,6 +102,14 @@ public class UniversityController : Controller
 
     public IActionResult Delete(int id)
     {
+        if (HttpContext.Session.GetString("email") == null)
+        {
+            return RedirectToAction("Unauthorized", "Error");
+        }
+        if (HttpContext.Session.GetString("role") != "Admin")
+        {
+            return RedirectToAction("Forbidden", "Error");
+        }
         var university = repository.GetById(id);
         return View(university);
     }
@@ -69,6 +118,14 @@ public class UniversityController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Remove(int id)
     {
+        if (HttpContext.Session.GetString("email") == null)
+        {
+            return RedirectToAction("Unauthorized", "Error");
+        }
+        if (HttpContext.Session.GetString("role") != "Admin")
+        {
+            return RedirectToAction("Forbidden", "Error");
+        }
         var result = repository.Delete(id);
         if (result == 0)
         {

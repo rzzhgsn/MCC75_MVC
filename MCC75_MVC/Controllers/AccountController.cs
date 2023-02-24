@@ -1,38 +1,27 @@
-﻿using MCC75_MVC.Contexts;
-using MCC75_MVC.Models;
+﻿using MCC75_MVC.Repositories;
 using MCC75_MVC.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 
 namespace MCC75_MVC.Controllers;
 
 public class AccountController : Controller
 {
-    private readonly MyContext context;
+    private readonly AccountRepository accountRepository;
+    private readonly EmployeeRepository employeeRepository;
 
-    public AccountController(MyContext context)
+    public AccountController(AccountRepository accountRepository)
     {
-        this.context = context;
+        this.accountRepository = accountRepository;
     }
 
     public IActionResult Index()
     {
-        /*var accounts = context.Accounts.ToList();
-        return View(accounts);*/
-        var result = context.Accounts.Join(
-            context.Employees,
-            a => a.EmployeeNIK,
-            e => e.NIK,
-            (a, e) => new Account
-            {
-                Password = a.Password,
-                EmployeeNIK = e.Email
-            });
-        return View(result);
+        var account = accountRepository.GetAccountEmployee();
+        return View(account);
     }
+
+
     // GET : Account/Register
     public IActionResult Register()
     {
@@ -59,74 +48,11 @@ public class AccountController : Controller
     {
         if (ModelState.IsValid)
         {
-            University university = new University
-            { 
-                Name = registerVM.UniversityName
-                
-            };
-
-            // Bikin kondisi untuk mengecek apakah data university sudah ada
-            if (context.Universities.Any(u => u.Name == registerVM.UniversityName))
+            var result = accountRepository.Register(registerVM);
+            if (result > 0)
             {
-                university.Id = context.Universities.FirstOrDefault(u => u.Name == university.Name).Id;
+                return RedirectToAction("Index", "Home");
             }
-            else
-            {
-                context.Universities.Add(university);
-                context.SaveChanges();
-
-            }
-
-            Education education = new Education
-            {
-                Major = registerVM.Major,
-                Degree = registerVM.Degree,
-                GPA = registerVM.GPA,
-                UniversityId = university.Id
-            };
-            context.Educations.Add(education);
-            context.SaveChanges();
-
-            Employee employee = new Employee
-            {
-                NIK = registerVM.NIK,
-                FirstName = registerVM.FirstName,
-                LastName = registerVM.LastName,
-                Birthdate = registerVM.BirthDate,
-                Gender = (Employee.GenderEnum)registerVM.Gender,
-                HiringDate = registerVM.HiringDate,
-                Email = registerVM.Email,
-                PhoneNumber = registerVM.PhoneNumber,
-            };
-            context.Employees.Add(employee);
-            context.SaveChanges();
-
-            Account account = new Account
-            {
-                EmployeeNIK = registerVM.NIK,
-                Password = registerVM.Password
-            };
-            context.Accounts.Add(account);
-            context.SaveChanges();
-
-            AccountRole accountRole = new AccountRole
-            {
-                AccountNIK = registerVM.NIK,
-                RoleId = 2
-            };
-
-            context.AccountRoles.Add(accountRole);
-            context.SaveChanges();
-
-            Profilling profiling = new Profilling
-            {
-                EmployeeNIK = registerVM.NIK,
-                EducationId = education.Id
-            };
-            context.Profillings.Add(profiling);
-            context.SaveChanges();
-
-            return RedirectToAction("Index", "Home");
         }
         return View();
     }
@@ -144,23 +70,23 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Login(LoginVM loginVM)
     {
-        var getAccounts = context.Employees.Join(
-            context.Accounts,
-            e => e.NIK,
-            a => a.EmployeeNIK,
-            (e, a) => new LoginVM
-            {
-                Email = e.Email,
-                Password = a.Password
-
-            });
-           
-        if (getAccounts.Any(e => e.Email == loginVM.Email && e.Password == loginVM.Password))
+        if (accountRepository.Login(loginVM))
         {
+            var userdata = accountRepository.GetUserdata(loginVM.Email);
+
+            HttpContext.Session.SetString("email", userdata.Email);
+            HttpContext.Session.SetString("fullname", userdata.FullName);
+            HttpContext.Session.SetString("role", userdata.Role);
+
             return RedirectToAction("Index", "Home");
         }
-        ModelState.AddModelError(string.Empty, "Account or Password Not Found");
+        ModelState.AddModelError(string.Empty, "Account or Password Not Found!");
         return View();
     }
 
+    public IActionResult Logout()
+    {
+        HttpContext.Session.Clear();
+        return RedirectToAction(nameof(Index), "Home");
+    }
 }
