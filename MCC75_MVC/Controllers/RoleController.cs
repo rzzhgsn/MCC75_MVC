@@ -2,11 +2,13 @@
 using MCC75_MVC.Models;
 using MCC75_MVC.Repositories;
 using MCC75_MVC.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace MCC75_MVC.Controllers;
 
+[Authorize(Roles = "Admin")]
 public class RoleController : Controller
 {
     private readonly RoleRepository roleRepository;
@@ -18,41 +20,17 @@ public class RoleController : Controller
 
     public IActionResult Index()
     {
-        if (HttpContext.Session.GetString("email") == null)
-        {
-            return RedirectToAction("Unauthorized", "Error");
-        }
-        if (HttpContext.Session.GetString("role") != "Admin")
-        {
-            return RedirectToAction("Forbidden", "Error");
-        }
         var roles = roleRepository.GetAll();
         return View(roles);
     }
     public IActionResult Details(int id)
     {
-        if (HttpContext.Session.GetString("email") == null)
-        {
-            return RedirectToAction("Unauthorized", "Error");
-        }
-        if (HttpContext.Session.GetString("role") != "Admin")
-        {
-            return RedirectToAction("Forbidden", "Error");
-        }
         var roles = roleRepository.GetById(id);
         return View(roles);
     }
 
     public IActionResult Create()
     {
-        if (HttpContext.Session.GetString("email") == null)
-        {
-            return RedirectToAction("Unauthorized", "Error");
-        }
-        if (HttpContext.Session.GetString("role") != "Admin")
-        {
-            return RedirectToAction("Forbidden", "Error");
-        }
         return View();
     }
 
@@ -68,14 +46,6 @@ public class RoleController : Controller
 
     public IActionResult Edit(int id)
     {
-        if (HttpContext.Session.GetString("email") == null)
-        {
-            return RedirectToAction("Unauthorized", "Error");
-        }
-        if (HttpContext.Session.GetString("role") != "Admin")
-        {
-            return RedirectToAction("Forbidden", "Error");
-        }
         var roles = roleRepository.GetById(id);
         return View(roles);
     }
@@ -94,14 +64,6 @@ public class RoleController : Controller
 
     public IActionResult Delete(int id)
     {
-        if (HttpContext.Session.GetString("email") == null)
-        {
-            return RedirectToAction("Unauthorized", "Error");
-        }
-        if (HttpContext.Session.GetString("role") != "Admin")
-        {
-            return RedirectToAction("Forbidden", "Error");
-        }
         var roles = roleRepository.GetById(id);
         return View(roles);
     }

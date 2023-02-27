@@ -2,17 +2,24 @@
 using MCC75_MVC.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
+using NuGet.Protocol.Core.Types;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace MCC75_MVC.Controllers;
 
 public class AccountController : Controller
 {
     private readonly AccountRepository accountRepository;
+    private readonly IConfiguration configuration;
     private readonly EmployeeRepository employeeRepository;
 
-    public AccountController(AccountRepository accountRepository)
+    public AccountController(AccountRepository accountRepository, IConfiguration configuration)
     {
         this.accountRepository = accountRepository;
+        this.configuration = configuration;
     }
 
     public IActionResult Index()
@@ -73,10 +80,36 @@ public class AccountController : Controller
         if (accountRepository.Login(loginVM))
         {
             var userdata = accountRepository.GetUserdata(loginVM.Email);
+            var roles = accountRepository.GetRolesByNIK(loginVM.Email);
 
-            HttpContext.Session.SetString("email", userdata.Email);
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Email, userdata.Email),
+                new Claim(ClaimTypes.Name, userdata.FullName)
+            };
+
+            foreach (var item in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, item));
+            }
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]));
+            var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                issuer: configuration["JWT:Issuer"],
+                audience: configuration["JWT:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(10),
+                signingCredentials: signIn
+                );
+
+            var generateToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+            HttpContext.Session.SetString("jwtoken", generateToken);
+
+            /*HttpContext.Session.SetString("email", userdata.Email);
             HttpContext.Session.SetString("fullname", userdata.FullName);
-            HttpContext.Session.SetString("role", userdata.Role);
+            HttpContext.Session.SetString("role", userdata.Role);*/
 
             return RedirectToAction("Index", "Home");
         }

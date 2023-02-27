@@ -185,6 +185,16 @@ public class AccountRepository : IRepository<int, Account>
         return userdata;
     }
 
+    public List<string> GetRolesByNIK(string email)
+    {
+        var getNIK = context.Employees.FirstOrDefault(e => e.Email == email);
+        return context.AccountRoles.Where(ar => ar.AccountNIK == getNIK.NIK).Join(
+            context.Roles,
+            ar => ar.RoleId,
+            r => r.Id,
+            (ar, r) => r.Name).ToList();
+    }
+
     /*public Account GetEducationById(int key)
     {
         var account = GetById(key);

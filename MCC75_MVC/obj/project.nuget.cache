@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "1MgJNaStwfzfJvDki52HGJL8D2JHOH4cGzBD64tooBFZOs/i0ylj4jfxtQ0FXjbat568Ejf2Zaz8xd8xsAf22g==",
+  "dgSpecHash": "rZj3rDG41rX25OxfxU1FGcqsg7pPGkD+HwXYQdu71XwsPqDws6runyqr2kDk3QIGdvlt8BC3igu20Y2lQU0guQ==",
   "success": true,
   "projectFilePath": "E:\\Tugas1\\Visual Basic\\MCC75_MVC\\MCC75_MVC\\MCC75_MVC.csproj",
   "expectedPackageFiles": [
@@ -10,6 +10,7 @@
     "C:\\Users\\LENOVO\\.nuget\\packages\\messagepack\\2.1.152\\messagepack.2.1.152.nupkg.sha512",
     "C:\\Users\\LENOVO\\.nuget\\packages\\messagepack.annotations\\2.1.152\\messagepack.annotations.2.1.152.nupkg.sha512",
     "C:\\Users\\LENOVO\\.nuget\\packages\\messagepackanalyzer\\2.1.152\\messagepackanalyzer.2.1.152.nupkg.sha512",
+    "C:\\Users\\LENOVO\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\6.0.14\\microsoft.aspnetcore.authentication.jwtbearer.6.0.14.nupkg.sha512",
     "C:\\Users\\LENOVO\\.nuget\\packages\\microsoft.aspnetcore.razor.language\\6.0.0\\microsoft.aspnetcore.razor.language.6.0.0.nupkg.sha512",
     "C:\\Users\\LENOVO\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\5.0.0\\microsoft.bcl.asyncinterfaces.5.0.0.nupkg.sha512",
     "C:\\Users\\LENOVO\\.nuget\\packages\\microsoft.build\\17.3.2\\microsoft.build.17.3.2.nupkg.sha512",
